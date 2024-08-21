@@ -8,6 +8,36 @@ const friends = [
   { id: 2, name: "Jack Sparrow" },
 ];
 
+app.use((req, res, next) => {
+  const start = Date.now();
+  next();
+  // response flowing up here, after the next function
+  const delta = Date.now() - start;
+  console.log(`${req.method}, ${req.url}, ${delta}ms`);
+});
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("<h1>Welcome to the Express project</h1>");
+});
+
+app.post("/friends", (req, res) => {
+  if (!req.body.name) {
+    return res.status(400).json({
+      error: "Missing friend name",
+    });
+  }
+
+  const newFriend = {
+    id: friends.length,
+    name: req.body.name,
+  };
+  friends.push(newFriend);
+
+  res.json(newFriend);
+});
+
 app.get("/friends", (req, res) => {
   res.json(friends);
 });
